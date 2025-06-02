@@ -4,18 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, Phone, TrendingUp, Clock, CreditCard, Search, Filter } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Calendar as CalendarIcon, Phone, TrendingUp, Clock, CreditCard, Search, Filter, ChevronDown } from 'lucide-react';
 import OrdersSidebar from '@/components/OrdersSidebar';
+import { format } from 'date-fns';
 
-// Mock data for orders
+// Extended mock data for 35 orders
 const mockOrders = [
   {
     id: '61391',
     customerName: 'Sarah Johnson',
     phone: '+1 (555) 123-4567',
     products: 'Wireless Headphones',
-    orderDate: '27/06/24',
-    deliveryDate: '3 days ago',
+    orderDate: '2024-03-27',
+    deliveryDate: '2024-03-24',
     callStatus: 'completed',
     total: '$199'
   },
@@ -24,8 +27,8 @@ const mockOrders = [
     customerName: 'Mike Chen',
     phone: '+1 (555) 987-6543',
     products: 'Smart Watch Pro, Charging Cable',
-    orderDate: '27/06/24',
-    deliveryDate: '3 days ago',
+    orderDate: '2024-03-27',
+    deliveryDate: '2024-03-24',
     callStatus: 'scheduled',
     total: '$449'
   },
@@ -34,8 +37,8 @@ const mockOrders = [
     customerName: 'Emily Davis',
     phone: '+1 (555) 456-7890',
     products: 'Bluetooth Speaker',
-    orderDate: '26/06/24',
-    deliveryDate: '4 days ago',
+    orderDate: '2024-03-26',
+    deliveryDate: '2024-03-23',
     callStatus: 'not_scheduled',
     total: '$89'
   },
@@ -44,8 +47,8 @@ const mockOrders = [
     customerName: 'David Wilson',
     phone: '+1 (555) 321-0987',
     products: 'Laptop Stand',
-    orderDate: '24/06/24',
-    deliveryDate: '6 days ago',
+    orderDate: '2024-03-24',
+    deliveryDate: '2024-03-21',
     callStatus: 'completed',
     total: '$79'
   },
@@ -54,11 +57,22 @@ const mockOrders = [
     customerName: 'Lisa Thompson',
     phone: '+1 (555) 654-3210',
     products: 'Phone Case, Screen Protector',
-    orderDate: '24/06/24',
-    deliveryDate: '6 days ago',
+    orderDate: '2024-03-24',
+    deliveryDate: '2024-03-21',
     callStatus: 'scheduled',
     total: '$34'
-  }
+  },
+  // Adding more mock data for pagination
+  ...Array.from({ length: 30 }, (_, i) => ({
+    id: `${61360 + i}`,
+    customerName: ['Alex Rodriguez', 'Jessica Brown', 'Michael Smith', 'Ashley Garcia', 'Daniel Lee', 'Amanda Martinez', 'Ryan Taylor', 'Nicole Anderson', 'Kevin White', 'Rachel Green'][i % 10],
+    phone: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+    products: ['Wireless Mouse', 'Gaming Keyboard', 'Monitor Stand', 'USB Cable', 'Wireless Charger', 'Phone Holder', 'Desk Lamp', 'Webcam', 'Microphone', 'Tablet Case'][i % 10],
+    orderDate: new Date(2024, 2, Math.floor(Math.random() * 25) + 1).toISOString().split('T')[0],
+    deliveryDate: new Date(2024, 2, Math.floor(Math.random() * 20) + 1).toISOString().split('T')[0],
+    callStatus: ['completed', 'scheduled', 'not_scheduled'][Math.floor(Math.random() * 3)],
+    total: `$${Math.floor(Math.random() * 300) + 20}`
+  }))
 ];
 
 const getStatusBadge = (status: string) => {
@@ -74,8 +88,39 @@ const getStatusBadge = (status: string) => {
   }
 };
 
+const formatDate = (dateString: string) => {
+  return format(new Date(dateString), 'dd MMM yyyy');
+};
+
 const Orders = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  
+  const ordersPerPage = 10;
+  const totalPages = Math.ceil(mockOrders.length / ordersPerPage);
+  
+  // Filter orders based on selected filter and search term
+  const filteredOrders = mockOrders.filter(order => {
+    const matchesFilter = selectedFilter === 'all' || order.callStatus === selectedFilter;
+    const matchesSearch = order.products.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+  
+  // Paginate filtered orders
+  const startIndex = (currentPage - 1) * ordersPerPage;
+  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + ordersPerPage);
+  
+  const handleFilterChange = (filter: string) => {
+    setSelectedFilter(filter);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -95,14 +140,82 @@ const Orders = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Search orders..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  placeholder="Search by product name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none w-64"
                 />
               </div>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Filter
-              </Button>
+              
+              <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Filter className="w-4 h-4" />
+                    Filter
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-4" align="end">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateRange.from ? (
+                              dateRange.to ? (
+                                <>
+                                  {format(dateRange.from, "LLL dd, y")} -{" "}
+                                  {format(dateRange.to, "LLL dd, y")}
+                                </>
+                              ) : (
+                                format(dateRange.from, "LLL dd, y")
+                              )
+                            ) : (
+                              <span>Pick a date range</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={dateRange.from}
+                            selected={dateRange}
+                            onSelect={setDateRange}
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Call Status</label>
+                      <div className="space-y-2">
+                        {['completed', 'scheduled', 'not_scheduled'].map((status) => (
+                          <label key={status} className="flex items-center">
+                            <input type="checkbox" className="mr-2" />
+                            <span className="text-sm text-gray-600 capitalize">
+                              {status.replace('_', ' ')}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Sort by</label>
+                      <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        <option>Most Recent</option>
+                        <option>Oldest First</option>
+                        <option>Highest Price</option>
+                        <option>Lowest Price</option>
+                      </select>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
@@ -114,7 +227,7 @@ const Orders = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">Calls Scheduled</CardTitle>
-                <Phone className="h-4 w-4 text-gray-400" />
+                <Phone className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-gray-900">127</div>
@@ -128,7 +241,7 @@ const Orders = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">Calls Completed</CardTitle>
-                <TrendingUp className="h-4 w-4 text-gray-400" />
+                <TrendingUp className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-gray-900">94</div>
@@ -142,7 +255,7 @@ const Orders = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">Pending Calls</CardTitle>
-                <Clock className="h-4 w-4 text-gray-400" />
+                <Clock className="h-4 w-4 text-yellow-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-gray-900">33</div>
@@ -155,19 +268,19 @@ const Orders = () => {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Call Credits Used</CardTitle>
-                <CreditCard className="h-4 w-4 text-gray-400" />
+                <CardTitle className="text-sm font-medium text-gray-600">Call Minutes Used</CardTitle>
+                <CreditCard className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-gray-900">127 / 500</div>
+                <div className="text-2xl font-bold text-gray-900">350 / 500</div>
                 <div className="flex items-center text-xs text-gray-600 mt-1">
-                  25% of monthly limit
+                  70% of monthly minutes
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Filters */}
+          {/* Status Filters */}
           <div className="flex items-center gap-4 mb-6">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Status:</span>
@@ -180,11 +293,11 @@ const Orders = () => {
                 ].map((filter) => (
                   <button
                     key={filter.value}
-                    onClick={() => setSelectedFilter(filter.value)}
-                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                    onClick={() => handleFilterChange(filter.value)}
+                    className={`px-4 py-2 text-sm rounded-md transition-all duration-200 ${
                       selectedFilter === filter.value
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-blue-600 shadow-sm font-medium'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
                     {filter.label}
@@ -200,73 +313,117 @@ const Orders = () => {
           </div>
 
           {/* Orders Table */}
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b border-gray-200">
-                  <TableHead className="text-left font-medium text-gray-900">Customer Name</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Phone Number</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Product(s) Purchased</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Order Date</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Delivery Date</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Call Status</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Total</TableHead>
-                  <TableHead className="text-left font-medium text-gray-900">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockOrders.map((order) => (
-                  <TableRow key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <TableCell>
-                      <div className="font-medium text-gray-900">{order.customerName}</div>
-                      <div className="text-sm text-gray-500">#{order.id}</div>
-                    </TableCell>
-                    <TableCell className="text-gray-700">{order.phone}</TableCell>
-                    <TableCell>
-                      <div className="text-gray-900">{order.products}</div>
-                    </TableCell>
-                    <TableCell className="text-gray-700">{order.orderDate}</TableCell>
-                    <TableCell className="text-gray-700">{order.deliveryDate}</TableCell>
-                    <TableCell>
-                      {getStatusBadge(order.callStatus)}
-                    </TableCell>
-                    <TableCell className="font-medium text-gray-900">{order.total}</TableCell>
-                    <TableCell>
-                      <Button 
-                        size="sm" 
-                        variant={order.callStatus === 'not_scheduled' ? 'default' : 'outline'}
-                        className="text-sm"
-                      >
-                        {order.callStatus === 'not_scheduled' ? 'Schedule Call' : 'Edit Call'}
-                      </Button>
-                    </TableCell>
+          <Card className="min-h-[600px]">
+            <div className="overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-b border-gray-200 bg-gray-50">
+                    <TableHead className="text-left font-semibold text-gray-900 py-4">Customer Name</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Phone Number</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Product(s) Purchased</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Order Date</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Delivery Date</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Call Status</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Total</TableHead>
+                    <TableHead className="text-left font-semibold text-gray-900">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+                </TableHeader>
+                <TableBody>
+                  {paginatedOrders.map((order, index) => (
+                    <TableRow 
+                      key={order.id} 
+                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <TableCell className="py-4">
+                        <div className="font-medium text-gray-900">{order.customerName}</div>
+                        <div className="text-sm text-gray-500">#{order.id}</div>
+                      </TableCell>
+                      <TableCell className="text-gray-700">{order.phone}</TableCell>
+                      <TableCell>
+                        <div className="text-gray-900">{order.products}</div>
+                      </TableCell>
+                      <TableCell className="text-gray-700">{formatDate(order.orderDate)}</TableCell>
+                      <TableCell className="text-gray-700">{formatDate(order.deliveryDate)}</TableCell>
+                      <TableCell>
+                        {getStatusBadge(order.callStatus)}
+                      </TableCell>
+                      <TableCell className="font-medium text-gray-900">{order.total}</TableCell>
+                      <TableCell>
+                        <Button 
+                          size="sm" 
+                          variant={order.callStatus === 'not_scheduled' ? 'default' : 'outline'}
+                          className={`text-sm h-8 px-3 ${
+                            order.callStatus === 'not_scheduled' 
+                              ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {order.callStatus === 'not_scheduled' ? 'Schedule Call' : 'Edit Call'}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-600">
-              Showing 1 to 5 of 127 orders
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <div className="flex items-center gap-1">
-                <Button variant="default" size="sm" className="w-8 h-8 p-0">1</Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 p-0">2</Button>
-                <Button variant="outline" size="sm" className="w-8 h-8 p-0">3</Button>
-                <span className="px-2 text-gray-400">...</span>
-                <Button variant="outline" size="sm" className="w-8 h-8 p-0">13</Button>
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+              <div className="text-sm text-gray-600">
+                Showing {startIndex + 1} to {Math.min(startIndex + ordersPerPage, filteredOrders.length)} of {filteredOrders.length} orders
               </div>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="h-8"
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
+                    if (pageNum > totalPages) return null;
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? 'default' : 'outline'}
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                        onClick={() => handlePageChange(pageNum)}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                  {totalPages > 5 && currentPage < totalPages - 2 && (
+                    <>
+                      <span className="px-2 text-gray-400">...</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        {totalPages}
+                      </Button>
+                    </>
+                  )}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="h-8"
+                >
+                  Next
+                </Button>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>
