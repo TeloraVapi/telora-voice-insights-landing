@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -228,39 +227,6 @@ const Orders = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-80 p-4 bg-white border border-gray-200 shadow-lg z-50" align="end">
                   <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className="w-full justify-start text-left font-normal">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateRange?.from ? (
-                              dateRange.to ? (
-                                <>
-                                  {format(dateRange.from, "LLL dd, y")} -{" "}
-                                  {format(dateRange.to, "LLL dd, y")}
-                                </>
-                              ) : (
-                                format(dateRange.from, "LLL dd, y")
-                              )
-                            ) : (
-                              <span>Pick a date range</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg z-50" align="start">
-                          <Calendar
-                            initialFocus
-                            mode="range"
-                            defaultMonth={dateRange?.from}
-                            selected={dateRange}
-                            onSelect={setDateRange}
-                            numberOfMonths={2}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    
                     <div>
                       <label className="text-sm font-medium text-gray-700 mb-2 block">Call Status</label>
                       <div className="space-y-2">
