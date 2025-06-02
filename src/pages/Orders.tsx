@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,7 +173,7 @@ const Orders = () => {
                         <PopoverTrigger asChild>
                           <Button variant="outline" className="w-full justify-start text-left font-normal">
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateRange.from ? (
+                            {dateRange?.from ? (
                               dateRange.to ? (
                                 <>
                                   {format(dateRange.from, "LLL dd, y")} -{" "}
@@ -190,7 +191,7 @@ const Orders = () => {
                           <Calendar
                             initialFocus
                             mode="range"
-                            defaultMonth={dateRange.from}
+                            defaultMonth={dateRange?.from}
                             selected={dateRange}
                             onSelect={setDateRange}
                             numberOfMonths={2}
