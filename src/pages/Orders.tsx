@@ -81,13 +81,53 @@ const mockOrders = [
 const getStatusBadge = (status: string) => {
   switch (status) {
     case 'completed':
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Completed</Badge>;
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">✅ Completed</Badge>;
     case 'scheduled':
-      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Scheduled</Badge>;
+      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">🟡 Scheduled</Badge>;
     case 'not_scheduled':
-      return <Badge variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-100">Not Scheduled</Badge>;
+      return <Badge className="bg-gray-100 text-gray-600 hover:bg-gray-100 border-gray-200">⚪ Not Scheduled</Badge>;
     default:
       return <Badge variant="secondary">Unknown</Badge>;
+  }
+};
+
+const getActionButton = (order: any, onScheduleCall: (order: any) => void) => {
+  switch (order.callStatus) {
+    case 'completed':
+      return (
+        <Button 
+          size="sm" 
+          variant="outline"
+          disabled
+          className="text-sm h-8 px-3 bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
+        >
+          Call Completed
+        </Button>
+      );
+    case 'scheduled':
+      return (
+        <Button 
+          size="sm" 
+          variant="outline"
+          className="text-sm h-8 px-3 border-blue-300 text-blue-700 hover:bg-blue-50"
+          onClick={() => onScheduleCall(order)}
+        >
+          Edit Schedule
+        </Button>
+      );
+    case 'not_scheduled':
+      return (
+        <Button 
+          size="sm" 
+          variant="default"
+          className="text-sm h-8 px-3 bg-blue-600 hover:bg-blue-700 text-white"
+          onClick={() => onScheduleCall(order)}
+        >
+          Schedule Call
+        </Button>
+      );
+    default:
+      return null;
   }
 };
 
@@ -103,12 +143,13 @@ const Orders = () => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [orders, setOrders] = useState(mockOrders);
   
   const ordersPerPage = 10;
-  const totalPages = Math.ceil(mockOrders.length / ordersPerPage);
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
   
   // Filter orders based on selected filter and search term
-  const filteredOrders = mockOrders.filter(order => {
+  const filteredOrders = orders.filter(order => {
     const matchesFilter = selectedFilter === 'all' || order.callStatus === selectedFilter;
     const matchesSearch = order.products.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
@@ -130,6 +171,26 @@ const Orders = () => {
   const handleScheduleCall = (order: any) => {
     setSelectedOrder(order);
     setModalOpen(true);
+  };
+
+  const handleCallScheduled = (orderId: string) => {
+    setOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === orderId 
+          ? { ...order, callStatus: 'scheduled' }
+          : order
+      )
+    );
+  };
+
+  const handleCallDeleted = (orderId: string) => {
+    setOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === orderId 
+          ? { ...order, callStatus: 'not_scheduled' }
+          : order
+      )
+    );
   };
   
   return (
@@ -165,7 +226,7 @@ const Orders = () => {
                     <ChevronDown className="w-4 h-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-4" align="end">
+                <PopoverContent className="w-80 p-4 bg-white border border-gray-200 shadow-lg z-50" align="end">
                   <div className="space-y-4">
                     <div>
                       <label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</label>
@@ -187,7 +248,7 @@ const Orders = () => {
                             )}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg z-50" align="start">
                           <Calendar
                             initialFocus
                             mode="range"
@@ -357,18 +418,7 @@ const Orders = () => {
                       </TableCell>
                       <TableCell className="font-medium text-gray-900">{order.total}</TableCell>
                       <TableCell>
-                        <Button 
-                          size="sm" 
-                          variant={order.callStatus === 'not_scheduled' ? 'default' : 'outline'}
-                          className={`text-sm h-8 px-3 ${
-                            order.callStatus === 'not_scheduled' 
-                              ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                          }`}
-                          onClick={() => handleScheduleCall(order)}
-                        >
-                          {order.callStatus === 'not_scheduled' ? 'Schedule Call' : 'Edit Schedule'}
-                        </Button>
+                        {getActionButton(order, handleScheduleCall)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -440,6 +490,8 @@ const Orders = () => {
         open={modalOpen}
         onOpenChange={setModalOpen}
         order={selectedOrder}
+        onCallScheduled={handleCallScheduled}
+        onCallDeleted={handleCallDeleted}
       />
     </div>
   );

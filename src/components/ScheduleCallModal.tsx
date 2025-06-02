@@ -24,6 +24,8 @@ interface ScheduleCallModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   order: Order | null;
+  onCallScheduled?: (orderId: string) => void;
+  onCallDeleted?: (orderId: string) => void;
 }
 
 const assistants = [
@@ -36,7 +38,9 @@ const assistants = [
 const ScheduleCallModal: React.FC<ScheduleCallModalProps> = ({ 
   open, 
   onOpenChange, 
-  order 
+  order,
+  onCallScheduled,
+  onCallDeleted
 }) => {
   const [selectedAssistant, setSelectedAssistant] = useState('post-purchase-feedback');
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -45,9 +49,9 @@ const ScheduleCallModal: React.FC<ScheduleCallModalProps> = ({
 
   useEffect(() => {
     if (order) {
-      setIsEditing(order.callStatus !== 'not_scheduled');
-      // Reset form when modal opens
-      if (!isEditing) {
+      setIsEditing(order.callStatus === 'scheduled');
+      // Reset form when modal opens for new scheduling
+      if (order.callStatus === 'not_scheduled') {
         setSelectedDate(undefined);
         setSelectedTime('14:00');
         setSelectedAssistant('post-purchase-feedback');
@@ -64,11 +68,21 @@ const ScheduleCallModal: React.FC<ScheduleCallModalProps> = ({
       date: selectedDate,
       time: selectedTime,
     });
+    
+    if (order.callStatus === 'not_scheduled' && onCallScheduled) {
+      onCallScheduled(order.id);
+    }
+    
     onOpenChange(false);
   };
 
   const handleDelete = () => {
     console.log('Deleting call schedule for order:', order.id);
+    
+    if (onCallDeleted) {
+      onCallDeleted(order.id);
+    }
+    
     onOpenChange(false);
   };
 
@@ -153,7 +167,7 @@ const ScheduleCallModal: React.FC<ScheduleCallModalProps> = ({
                       {selectedDate ? format(selectedDate, "MMM dd") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-lg z-50" align="start">
                     <Calendar
                       mode="single"
                       selected={selectedDate}
