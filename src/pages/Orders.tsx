@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,8 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Calendar as CalendarIcon, Phone, TrendingUp, Clock, CreditCard, Search, Filter, ChevronDown } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import OrdersSidebar from '@/components/OrdersSidebar';
+import ScheduleCallModal from '@/components/ScheduleCallModal';
 import { format } from 'date-fns';
+import type { DateRange } from 'react-day-picker';
 
 // Extended mock data for 35 orders
 const mockOrders = [
@@ -97,7 +99,9 @@ const Orders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   
   const ordersPerPage = 10;
   const totalPages = Math.ceil(mockOrders.length / ordersPerPage);
@@ -120,6 +124,11 @@ const Orders = () => {
   
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+  
+  const handleScheduleCall = (order: any) => {
+    setSelectedOrder(order);
+    setModalOpen(true);
   };
   
   return (
@@ -321,7 +330,6 @@ const Orders = () => {
                     <TableHead className="text-left font-semibold text-gray-900 py-4">Customer Name</TableHead>
                     <TableHead className="text-left font-semibold text-gray-900">Phone Number</TableHead>
                     <TableHead className="text-left font-semibold text-gray-900">Product(s) Purchased</TableHead>
-                    <TableHead className="text-left font-semibold text-gray-900">Order Date</TableHead>
                     <TableHead className="text-left font-semibold text-gray-900">Delivery Date</TableHead>
                     <TableHead className="text-left font-semibold text-gray-900">Call Status</TableHead>
                     <TableHead className="text-left font-semibold text-gray-900">Total</TableHead>
@@ -342,7 +350,6 @@ const Orders = () => {
                       <TableCell>
                         <div className="text-gray-900">{order.products}</div>
                       </TableCell>
-                      <TableCell className="text-gray-700">{formatDate(order.orderDate)}</TableCell>
                       <TableCell className="text-gray-700">{formatDate(order.deliveryDate)}</TableCell>
                       <TableCell>
                         {getStatusBadge(order.callStatus)}
@@ -357,8 +364,9 @@ const Orders = () => {
                               ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                               : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                           }`}
+                          onClick={() => handleScheduleCall(order)}
                         >
-                          {order.callStatus === 'not_scheduled' ? 'Schedule Call' : 'Edit Call'}
+                          {order.callStatus === 'not_scheduled' ? 'Schedule Call' : 'Edit Schedule'}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -426,6 +434,12 @@ const Orders = () => {
           </Card>
         </div>
       </div>
+
+      <ScheduleCallModal 
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        order={selectedOrder}
+      />
     </div>
   );
 };
