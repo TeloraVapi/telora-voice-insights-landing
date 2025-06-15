@@ -8,12 +8,22 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      "/api": {
+        target: "http://0.0.0.0:8000",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/calls": {
+        target: "http://0.0.0.0:8000",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean
+  ),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

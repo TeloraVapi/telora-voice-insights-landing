@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
   currentPage: number;
@@ -14,23 +14,26 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   totalItems,
   itemsPerPage,
-  onPageChange
+  onPageChange,
 }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
     <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-      <div className="text-sm text-gray-600">
-        Showing {startIndex + 1} to {endIndex} of {totalItems} orders
+      <div className="text-sm text-gray-600 opacity-70">
+        Showing{" "}
+        <span className="opacity-100 font-medium">{startIndex + 1}</span> to{" "}
+        <span className="opacity-100 font-medium">{endIndex}</span> of{" "}
+        <span className="opacity-100 font-medium">{totalItems}</span> orders
       </div>
       <div className="flex items-center gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className="h-8"
+          className="h-8 border-violet-200 text-violet-600 hover:bg-violet-50"
         >
           Previous
         </Button>
@@ -41,9 +44,13 @@ const Pagination: React.FC<PaginationProps> = ({
             return (
               <Button
                 key={pageNum}
-                variant={currentPage === pageNum ? 'default' : 'outline'}
+                variant={currentPage === pageNum ? "default" : "outline"}
                 size="sm"
-                className="w-8 h-8 p-0"
+                className={`w-8 h-8 p-0 ${
+                  currentPage === pageNum
+                    ? "bg-violet-600 text-white border-violet-600 hover:bg-violet-700"
+                    : "border-violet-200 text-violet-600 hover:bg-violet-50"
+                }`}
                 onClick={() => onPageChange(pageNum)}
               >
                 {pageNum}
@@ -56,7 +63,7 @@ const Pagination: React.FC<PaginationProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-8 h-8 p-0"
+                className="w-8 h-8 p-0 border-violet-200 text-violet-600 hover:bg-violet-50"
                 onClick={() => onPageChange(totalPages)}
               >
                 {totalPages}
@@ -64,12 +71,12 @@ const Pagination: React.FC<PaginationProps> = ({
             </>
           )}
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className="h-8"
+          className="h-8 border-violet-200 text-violet-600 hover:bg-violet-50"
         >
           Next
         </Button>
@@ -78,4 +85,4 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
-export default Pagination; 
+export default Pagination;

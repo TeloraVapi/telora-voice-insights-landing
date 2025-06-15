@@ -1,17 +1,20 @@
-import React from 'react';
-import { Calendar } from 'lucide-react';
+import React from "react";
+import { Calendar } from "lucide-react";
 
 interface StatusFiltersProps {
   selectedFilter: string;
   onFilterChange: (filter: string) => void;
 }
 
-const StatusFilters: React.FC<StatusFiltersProps> = ({ selectedFilter, onFilterChange }) => {
+const StatusFilters: React.FC<StatusFiltersProps> = ({
+  selectedFilter,
+  onFilterChange,
+}) => {
   const filters = [
-    { value: 'all', label: 'All' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'scheduled', label: 'Scheduled' },
-    { value: 'not_scheduled', label: 'Not Scheduled' }
+    { value: "all", label: "All" },
+    { value: "completed", label: "Completed" },
+    { value: "scheduled", label: "Scheduled" },
+    { value: "not_scheduled", label: "Not Scheduled" },
   ];
 
   return (
@@ -25,8 +28,8 @@ const StatusFilters: React.FC<StatusFiltersProps> = ({ selectedFilter, onFilterC
               onClick={() => onFilterChange(filter.value)}
               className={`px-4 py-2 text-sm rounded-md transition-all duration-200 ${
                 selectedFilter === filter.value
-                  ? 'bg-white text-blue-600 shadow-sm font-medium'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? "bg-white text-violet-600 shadow-sm font-medium"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               {filter.label}
@@ -34,13 +37,8 @@ const StatusFilters: React.FC<StatusFiltersProps> = ({ selectedFilter, onFilterC
           ))}
         </div>
       </div>
-
-      <div className="flex items-center gap-2">
-        <Calendar className="w-4 h-4 text-gray-400" />
-        <span className="text-sm text-gray-600">Last 30 days</span>
-      </div>
     </div>
   );
 };
 
-export default StatusFilters; 
+export default StatusFilters;

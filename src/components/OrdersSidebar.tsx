@@ -1,13 +1,29 @@
-
-import React from 'react';
-import { BarChart3, Package, MessageSquare, Settings, Home } from 'lucide-react';
+import React from "react";
+import {
+  BarChart3,
+  Package,
+  MessageSquare,
+  Settings,
+  Home,
+} from "lucide-react";
 
 const OrdersSidebar = () => {
   const navigationItems = [
-    { icon: Home, label: 'Dashboard', href: '/', active: false },
-    { icon: Package, label: 'Orders', href: '/orders', active: true, badge: '33' },
-    { icon: MessageSquare, label: 'Feedback', href: '/feedback', active: false },
-    { icon: Settings, label: 'Settings', href: '/settings', active: false },
+    { icon: Home, label: "Dashboard", href: "/", active: false },
+    {
+      icon: Package,
+      label: "Orders",
+      href: "/orders",
+      active: true,
+      badge: "33",
+    },
+    {
+      icon: MessageSquare,
+      label: "Feedback",
+      href: "/feedback",
+      active: false,
+    },
+    { icon: Settings, label: "Settings", href: "/settings", active: false },
   ];
 
   return (
@@ -18,7 +34,9 @@ const OrdersSidebar = () => {
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-lg">T</span>
           </div>
-          <span className="ml-3 text-xl font-semibold text-gray-900">Telora</span>
+          <span className="ml-3 text-xl font-semibold text-gray-900">
+            Telora
+          </span>
         </div>
       </div>
 
@@ -33,11 +51,15 @@ const OrdersSidebar = () => {
                   href={item.href}
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                     item.active
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                      ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
-                  <Icon className={`w-5 h-5 mr-3 ${item.active ? 'text-blue-500' : 'text-gray-400'}`} />
+                  <Icon
+                    className={`w-5 h-5 mr-3 ${
+                      item.active ? "text-blue-500" : "text-gray-400"
+                    }`}
+                  />
                   {item.label}
                   {item.badge && (
                     <span className="ml-auto bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">

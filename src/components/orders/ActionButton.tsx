@@ -1,42 +1,44 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import type { Order } from '@/types/orders';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import type { Order } from "@/types/orders";
 
 interface ActionButtonProps {
   order: Order;
   onScheduleCall: (order: Order) => void;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ order, onScheduleCall }) => {
+const ActionButton: React.FC<ActionButtonProps> = ({
+  order,
+  onScheduleCall,
+}) => {
   switch (order.callStatus) {
-    case 'completed':
+    case "completed":
       return (
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           variant="outline"
           disabled
-          className="text-sm h-8 px-3 bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
+          className="text-xs h-7 px-3 bg-green-50 text-green-700 border-green-200 cursor-not-allowed rounded-full font-medium"
         >
-          Call Completed
+          Completed
         </Button>
       );
-    case 'scheduled':
+    case "scheduled":
       return (
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           variant="outline"
-          className="text-sm h-8 px-3 border-blue-300 text-blue-700 hover:bg-blue-50"
+          className="text-xs h-7 px-3 border-violet-200 text-violet-700 bg-violet-50 hover:bg-violet-100 hover:border-violet-300 transition-all duration-200 rounded-full font-medium shadow-sm"
           onClick={() => onScheduleCall(order)}
         >
           Edit Schedule
         </Button>
       );
-    case 'not_scheduled':
+    case "not_scheduled":
       return (
-        <Button 
-          size="sm" 
-          variant="default"
-          className="text-sm h-8 px-3 bg-blue-600 hover:bg-blue-700 text-white"
+        <Button
+          size="sm"
+          className="text-xs h-7 px-3 bg-violet-600 text-white hover:bg-violet-700 transition-all duration-200 rounded-full font-medium shadow-sm border-0"
           onClick={() => onScheduleCall(order)}
         >
           Schedule Call
@@ -47,4 +49,4 @@ const ActionButton: React.FC<ActionButtonProps> = ({ order, onScheduleCall }) =>
   }
 };
 
-export default ActionButton; 
+export default ActionButton;
