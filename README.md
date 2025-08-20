@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# Telora - AI Voice Feedback for Shopify Merchants
 
-## Project info
+Transform post-purchase silence into actionable insights with AI-powered voice conversations.
 
-**URL**: https://lovable.dev/projects/4b9af46f-0355-4d48-9235-efc76c4ea8ad
+**Built in 3 days during a hackathon** | **TypeScript + React + Voice AI**
 
-## How can I edit this code?
+## Overview
 
-There are several ways of editing your application.
+Telora bridges the feedback gap that merchants face after customers make purchases. Instead of hoping customers will leave written reviews, Telora proactively reaches out with AI-powered voice agents that conduct natural conversations to collect valuable feedback and reviews.
 
-**Use Lovable**
+## The Problem & Solution
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4b9af46f-0355-4d48-9235-efc76c4ea8ad) and start prompting.
+**Problem**: Most customers don't leave reviews after purchases, and merchants miss critical feedback about their products and experience.
 
-Changes made via Lovable will be committed automatically to this repo.
+**Solution**: AI agents automatically call customers after purchases, conduct natural conversations to collect spoken feedback, and transform responses into structured insights with sentiment analysis.
 
-**Use your preferred IDE**
+## Key Features
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Smart Targeting**: Automatically identifies customers for follow-up based on purchase data
+- **Conversational AI**: Natural voice interactions that feel human-like
+- **Sentiment Analysis**: Categorizes feedback as positive, neutral, or negative
+- **Analytics Dashboard**: Visual insights into customer satisfaction trends
+- **Shopify Integration**: Seamless connection to store order data
+- **Real-time Processing**: Instant conversion of voice to structured data
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Tech Stack
 
-Follow these steps:
+**Frontend**: React 18 with TypeScript, Real-time data visualization
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+**Backend**: FastAPI (Python), RESTful API architecture
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+**Voice AI**: VAPI for voice agents, Natural language processing, Speech-to-text
 
-# Step 3: Install the necessary dependencies.
-npm i
+**Database**: Supabase, PostgreSQL
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+**Integrations**: Shopify API, Twilio for voice calls
+
+## Architecture
+Shopify Store → Telora API → Voice Agent (VAPI) → Twilio → Customer
+↓             ↓              ↓
+Order Webhook → Supabase DB → React Dashboard
+
+## Setup
+
+**Prerequisites**: Node.js 18+, Python 3.8+, Shopify store, VAPI account, Supabase project, Twilio account
+
+```bash
+# Clone and install
+git clone https://github.com/pothuguntaumesh/telora.git
+cd telora
+npm install
+
+# Backend setup
+cd backend
+pip install -r requirements.txt
+
+# Configure environment variables for Shopify API, VAPI, Twilio, and Supabase
+
+# Run application
+uvicorn main:app --reload  # Backend
+npm start                   # Frontend
 ```
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
 
-**Use GitHub Codespaces**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+How It Works
 
-## What technologies are used for this project?
+Shopify Integration: Webhooks trigger when customers make purchases
+Smart Outreach: AI agents call customers at optimal times
+Voice Conversations: Natural 2-3 minute conversations about their experience
+Real-time Processing: Voice responses converted to structured feedback
+Dashboard Insights: Merchants view sentiment analysis and actionable feedback
 
-This project is built with:
+Current Status
+Built and tested with my Shopify store during a 3-day hackathon. Demonstrates full voice AI integration, real-time data processing, and merchant dashboard functionality.
+Future: Planning Shopify App Store submission and expanded integrations.
+Technical Highlights
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Real-time voice-to-text processing with sentiment analysis
+Shopify webhook integration for automated customer outreach
+Scalable architecture handling concurrent voice conversations
+TypeScript frontend with Python FastAPI backend
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/4b9af46f-0355-4d48-9235-efc76c4ea8ad) and click on Share -> Publish.
+Solving the post-purchase feedback gap with AI-powered voice conversations.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This version is much more concise while still showcasing the technical sophistication and business value. It emphasizes the "3-day hackathon" achievement and positions the project professionally without being overwhelming.
